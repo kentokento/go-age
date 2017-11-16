@@ -3,8 +3,13 @@ package age
 
 import "time"
 
+type birth interface {
+	Year() int
+	YearDay() int
+}
+
 // AgeAt gets the age of an entity at a certain time.
-func AgeAt(birthDate time.Time, now time.Time) int {
+func AgeAt(birthDate, now birth) int {
 	// Get the year number change since the player's birth.
 	years := now.Year() - birthDate.Year()
 
@@ -18,12 +23,12 @@ func AgeAt(birthDate time.Time, now time.Time) int {
 }
 
 // Age is shorthand for AgeAt(birthDate, time.Now()), and carries the same usage and limitations.
-func Age(birthDate time.Time) int {
+func Age(birthDate birth) int {
 	return AgeAt(birthDate, time.Now())
 }
 
 // Gets the adjusted date of birth to work around leap year differences.
-func getAdjustedBirthDay(birthDate time.Time, now time.Time) int {
+func getAdjustedBirthDay(birthDate, now birth) int {
 	birthDay := birthDate.YearDay()
 	currentDay := now.YearDay()
 	if isLeap(birthDate) && !isLeap(now) && birthDay >= 60 {
@@ -36,7 +41,7 @@ func getAdjustedBirthDay(birthDate time.Time, now time.Time) int {
 }
 
 // Works out if a time.Time is in a leap year.
-func isLeap(date time.Time) bool {
+func isLeap(date birth) bool {
 	year := date.Year()
 	if year%400 == 0 {
 		return true
